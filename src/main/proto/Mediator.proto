@@ -1,0 +1,274 @@
+syntax = "proto3";
+option java_multiple_files = true;
+import "google/protobuf/empty.proto";
+package com.orlovsky.mooc_platform.grpc;
+
+message UUID {
+  string value = 1;
+}
+
+message Author {
+  UUID id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string description = 4;
+}
+
+message Student {
+  UUID id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string description = 4;
+}
+
+
+message AuthorDto {
+  UUID id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string description = 4;
+}
+
+message StudentDto {
+  UUID id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string description = 4;
+}
+
+message AuthorUpdate {
+  UUID authorId = 1;
+  AuthorDto updateData = 2;
+}
+
+message StudentUpdate {
+  UUID studentId = 1;
+  StudentDto updateData = 2;
+}
+
+
+message ListOfStudents {
+  repeated Student values = 1;
+}
+
+message ListOfAuthors {
+  repeated Author values = 1;
+}
+
+service AccountService {
+  //  CRUD
+  //  C
+  rpc signUpStudent(StudentDto) returns (Student);
+  rpc signUpAuthor(AuthorDto) returns (Author);
+  //  R
+  rpc getStudentById(UUID) returns (Student);
+  rpc getAuthorById(UUID) returns (Author);
+  rpc getAllStudents(google.protobuf.Empty) returns (ListOfStudents);
+  rpc getAllAuthors(google.protobuf.Empty) returns (ListOfAuthors);
+  //  U
+  rpc updateStudent(StudentUpdate) returns (google.protobuf.Empty);
+  rpc updateAuthor(AuthorUpdate) returns (google.protobuf.Empty);
+  //  D
+  rpc deleteStudentById(UUID) returns (google.protobuf.Empty);
+  rpc deleteAuthorById(UUID) returns (google.protobuf.Empty);
+}
+
+// EducationalMaterialService
+
+message EducationalStep {
+  UUID id = 1;
+  string eduMaterialUri = 2;
+  int32 position = 3;
+}
+message TestStepOption {
+  UUID id = 1;
+  string optionText = 2;
+  bool isCorrect = 3;
+}
+
+message StudentProgressItem {
+  UUID id = 1;
+  UUID student = 2;
+  UUID course = 3;
+  UUID passedEducationalStep = 4;
+  UUID passedTestStep = 5;
+  UUID chosenOption = 6;
+}
+
+message TestStep {
+  UUID id = 1;
+  UUID course = 2;
+  string descriptionUri = 3;
+  repeated TestStepOption answers = 4;
+  int32 score = 5;
+  int32 position = 6;
+}
+
+enum CourseStatus {
+  ACTIVE = 0;
+  IN_DEVELOPMENT = 1;
+  DEPRECATED = 2;
+}
+
+message Course {
+  UUID id = 1;
+  string title = 2;
+  string description = 3;
+  repeated Author authors = 4;
+  repeated Student students = 5;
+  int32 duration = 6;
+  CourseStatus status = 7;
+  repeated EducationalStep educationalSteps = 8;
+  repeated TestStep testSteps = 9;
+  int32 numberOfSteps = 10;
+  int64 price = 11;
+}
+
+message CourseDto {
+  UUID id = 1;
+  string title = 2;
+  string description = 3;
+  repeated Author authors = 4;
+  int32 duration = 6;
+  CourseStatus status = 7;
+  repeated EducationalStep educationalSteps = 8;
+  repeated TestStep testSteps = 9;
+  int32 numberOfSteps = 10;
+  int64 price = 11;
+}
+
+message ListOfCourses {
+  repeated Course courses = 1;
+}
+
+message CourseUpdate {
+  UUID courseId = 1;
+  CourseDto courseDto = 2;
+}
+
+message GetTestStepByIdRequest {
+  UUID testStepId = 1;
+}
+message GetEducationalStepByIdRequest {
+  UUID educationalStepId = 1;
+}
+
+message AddAuthorOnCourseRequest {
+  UUID courseId = 1;
+  UUID authorId = 2;
+}
+
+message AddEducationalStepOnCourseRequest {
+  UUID courseId = 1;
+  EducationalStepDto educationalStepDto = 2;
+}
+message AddTestStepOnCourseRequest {
+  UUID courseId = 1;
+  TestStepDto testStepDto = 2;
+}
+message AddTestStepOptionOnCourseRequest {
+  UUID courseId = 1;
+  UUID testStepId = 2;
+  TestStepOptionRequestDto testStepOptionRequestDto = 3;
+}
+
+message EducationalStepDto {
+  UUID id = 1;
+  UUID courseId = 2;
+  string eduMaterialUri = 3;
+  int32 position = 4;
+}
+
+message TestStepDto {
+  UUID id = 1;
+  UUID courseId = 2;
+  string descriptionUri = 3;
+  repeated TestStepOptionDto answers = 4;
+  int32 score = 5;
+  int32 position = 6;
+}
+
+message TestStepOptionRequestDto {
+  UUID id = 1;
+  string optionText = 2;
+  bool isCorrect = 3;
+}
+
+message TestStepOptionDto {
+  UUID id = 1;
+  string optionText = 2;
+}
+
+
+message DeleteEducationalStepOnCourseRequest {
+  UUID courseId = 1;
+  UUID educationalStepId = 2;
+}
+
+message DeleteTestStepOnCourseRequest {
+  UUID courseId = 1;
+  UUID testStepId = 2;
+}
+
+message DeleteTestStepOptionOnCourseRequest {
+  UUID testStepId = 1;
+  UUID testStepOptionId = 2;
+}
+
+message DeleteAuthorOnCourseRequest {
+  UUID courseId = 1;
+  UUID authorId = 2;
+}
+
+message DeleteCourseRequest {
+  UUID courseId = 1;
+}
+
+service EducationalMaterialService {
+  //  CRUD
+  //  C
+  rpc createEmptyCourse(CourseDto) returns (Course);
+  //  R
+  rpc getCourseById(UUID) returns (Course);
+  rpc getAllCourses(google.protobuf.Empty) returns (ListOfCourses);
+  rpc getTestStepById(GetTestStepByIdRequest) returns (TestStep);
+  rpc getEducationalStepById(GetEducationalStepByIdRequest) returns (EducationalStep);
+  //  U
+  rpc updateCourseInfo(CourseUpdate) returns (google.protobuf.Empty);
+  rpc addAuthor(AddAuthorOnCourseRequest) returns (google.protobuf.Empty);
+  rpc addEducationalStep(AddEducationalStepOnCourseRequest) returns (EducationalStep);
+  rpc addTestStep(AddTestStepOnCourseRequest) returns (TestStep);
+  rpc addTestStepOption(AddTestStepOptionOnCourseRequest) returns (TestStepOption);
+  //  D
+  rpc deleteEducationalStep(DeleteEducationalStepOnCourseRequest) returns (google.protobuf.Empty);
+  rpc deleteTestStep(DeleteTestStepOnCourseRequest) returns (google.protobuf.Empty);
+  rpc deleteTestAnswer(DeleteTestStepOptionOnCourseRequest) returns (google.protobuf.Empty);
+  rpc deleteAuthorById(DeleteAuthorOnCourseRequest) returns (google.protobuf.Empty);
+  rpc deleteCourse(DeleteCourseRequest) returns (google.protobuf.Empty);
+}
+
+// CourseProgressService
+message SignUpUserRequest {
+  UUID courseId = 1;
+  UUID studentId = 2;
+}
+message MakePassedEducationalStepRequest {
+  UUID courseId = 1;
+  UUID studentId = 2;
+  UUID educationalStepId = 3;
+}
+message MakeProcessedTestStepRequest {
+  UUID courseId = 1;
+  UUID studentId = 2;
+  UUID testStepId = 3;
+  TestStepOptionDto chosenAnswer = 4;
+}
+message MakeProcessedTestStepResponse{
+  bool value = 1;
+}
+
+service CourseProgressService {
+  rpc signUpUser(SignUpUserRequest) returns (google.protobuf.Empty);
+  rpc makePassedEducationalStep(MakePassedEducationalStepRequest) returns (google.protobuf.Empty);
+  rpc makeProcessedTestStep(MakeProcessedTestStepRequest) returns (MakeProcessedTestStepResponse);
+}
